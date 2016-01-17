@@ -4,6 +4,17 @@
 import copy
 import numpy
 
+def isSorted(x):
+	"""
+	Return True if x is sorted
+	"""
+	for i in range(len(x)-1):
+		if x[i] > x[i+1]:
+			print i, i+1, x[i], x[i+1]
+			return False
+
+	return True
+
 def swap(x,i,j):
 	"""
 	Swap the ith and the jth element of the array x
@@ -76,3 +87,96 @@ def mergeSort(x,**kwargs):
 	for i in range(start,end):
 		x[i] = aux[i]
 
+
+def heapSort(x):
+	"""
+	Sorts the array x by using heapsort
+	"""
+	h = heap(len(x),x)
+	for i in range(len(x)):
+		x[len(x)-i-1] = h.delMax()
+
+	
+class heap:
+	def __init__(self,N,data=None):
+		"""
+		Initialize a heap of size N, with data such that len(data) <=N
+		"""
+		self.x = [None]	# Heap initially empty. There is no nice way to ensuring that x never grows beyond 
+								# length N in python, so we will enforce this "manually"
+		self.heapLen = 0
+		self.maxHeapLen = N
+		try:
+			iterator = iter(data)
+			if len(data) > N:
+				raise Exception('Heap overflow. Too much data')
+			else:
+				[self.insert(p) for p in data]
+		except TypeError:
+			pass
+		
+
+	def insert(self,d):
+		"""
+		Insert data 'd' into the heap
+		"""
+		if self.heapLen == self.maxHeapLen:
+			raise Exception('Heap overflow. Cannot insert in a full heap')
+
+		self.x.append(d)
+		self.heapLen += 1
+		self.__swim()
+
+	def delMax(self):
+		if self.heapLen > 0:
+			swap(self.x,1,self.heapLen)
+			self.heapLen -= 1
+			self.__sink()
+			return self.x.pop()
+		else:
+			return None
+	
+	def __swim(self):
+		"""
+		Re-heapyfy with swim
+		"""
+		child = self.heapLen
+		heaped = True if child <= 1 else False 	# heap of length 1 or less is always in heap order
+
+		while not heaped and child > 1:
+			parent = numpy.floor(0.5*child).astype(int)
+			if self.x[child] > self.x[parent]:
+				swap(self.x,child,parent)
+				child = parent
+			else:
+				heaped = True
+
+
+	def __sink(self):
+		"""
+		Re-heapyfy with sink
+		"""
+		parent = 1
+		heaped = True if self.heapLen <= 1 else False # Heap of len 1 or less is always in heap order
+
+		while not heaped:
+			child1, child2 = parent*2, parent*2+1
+			if child1 > self.heapLen:
+				break
+			elif child2 > self.heapLen:
+				maxChild = child1
+				heaped = True
+			elif self.x[child1] > self.x[child2]:
+				maxChild = child1
+			else:
+				maxChild = child2
+			if self.x[parent] < self.x[maxChild]:
+				swap(self.x,parent,maxChild)
+				parent = maxChild
+			else:
+				heaped = True
+				
+def quicksort(x):
+	"""
+	Sort 
+	"""
