@@ -1,17 +1,41 @@
 import numpy
 import random
+import Queue
+
 class bstNode:
 	def __init__(self,key,value):
 		self.key = key
 		self.value = value
 		self.left = None
 		self.right = None
+		self.parent = None
 
 		self.color = 'b'		# Needed only for black-red trees
 
 		# Auxillary variables, not needed for basic functions:
 		self.N = 1	# Size of the subtree rooted a this node
 		self.depth = 0	# Distance of this node from the root
+
+	def __repr__(self):
+		return "bstNode(key, value)"
+	
+	def __str__(self):
+		if self.left != None:
+			leftStr = str(self.left.key)
+		else:
+			leftStr = 'None'
+
+		if self.right != None:
+			rightStr = str(self.right.key)
+		else:
+			rightStr = 'None'
+
+		if self.parent != None:
+			parentStr = str(self.parent.key)
+		else:
+			parentStr = 'None'
+		
+		return 'key = ' + str(self.key) + ', value = ' + str(self.value) + ', left = ' + leftStr + ', right = ' + rightStr + ', parent = ' + parentStr
 
 class bst:
 	"""
@@ -46,20 +70,22 @@ class bst:
 		"""
 		
 		head = kwargs.get('head',self.root)
+		parent = kwargs.get('parent',None)
 		depth = kwargs.get('depth',0)
 
 		if head is None:
 			head = bstNode(key,value)
 			head.depth = depth
+			head.parent = parent
 
 		elif head.key == key:
 			head.value = value
 		
 		elif head.key > key:
-			head.left = self.put(key,value,head=head.left,depth=head.depth+1)
+			head.left = self.put(key,value,head=head.left,depth=head.depth+1,parent=head)
 
 		else:
-			head.right = self.put(key,value,head=head.right,depth=head.depth+1)
+			head.right = self.put(key,value,head=head.right,depth=head.depth+1,parent=head)
 
 		# Set the size and depth as needed
 		head.N = self.size(head.left) + self.size(head.right) + 1
@@ -74,8 +100,37 @@ class bst:
 			return
 
 		self.inOrderPrint(head=head.left)
-		print (head.key, head.value, head.N)
+		print head 
 		self.inOrderPrint(head=head.right)
+
+	def bfsPrint(self,**kwargs):
+		head = self.root
+		q = Queue.Queue()
+		if head is not None:
+			q.put(head)
+
+		while not q.empty():
+			head = q.get()
+			print head
+			if head.left is not None:
+				q.put(head.left)
+			if head.right is not None:
+				q.put(head.right)
+	
+	def dfsPrint(self,**kwargs):
+		head = self.root
+		q = Queue.LifoQueue()
+		if head is not None:
+			q.put(head)
+
+		while not q.empty():
+			head = q.get()
+			print head
+			if head.left is not None:
+				q.put(head.left)
+			if head.right is not None:
+				q.put(head.right)
+
 
 	def maxKey(self):
 		head = self.root
@@ -95,55 +150,4 @@ class bst:
 
 			head = head.left
 
-def testBST(N = 20):
 
-	"""
-	t = bst(1,1)
-
-	randInp = numpy.random.randint(0,100,N)
-	sortInp = numpy.sort(randInp)
-
-	for x in randInp:
-		t.put(x,1)
-
-	t.inOrderPrint()
-
-	for x in random.sample(randInp,N/2):
-		print (x, t.get(x))
-
-	t.inOrderPrint()
-
-	depths = []
-	t.treeDepth(depths=depths)
-	print depths
-	"""
-
-	"""
-	depths = {}
-	for i in range(10):
-		print i
-		t = bst(numpy.random.rand(),1)
-		for i in range(100000):
-			t.put(numpy.random.rand(),1)
-			if i % 100 == 0 and i > 0:
-				if i < 1000 or i%1000 == 0:
-					if i in depths:
-						data = depths[i]
-						depths[i] = (data[0]+t.depth,data[1]+1)
-					else:
-						depths[i] = (t.depth,1)
-
-	size, dpt = [], []
-	for k, v in depths.iteritems():
-		size.append(k)
-		dpt.append((1.0*v[0])/v[1])
-	
-	return numpy.array(size), numpy.array(dpt)
-	"""
-
-
-	t = bst(numpy.random.rand(),1)
-	for i in range(1000):
-		t.put(numpy.random.rand(),1)
-
-	return t

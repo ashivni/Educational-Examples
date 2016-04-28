@@ -62,16 +62,6 @@ class linkedList:
 
 		self.head = last
 			
-def testLL():
-	ll = linkedList(1)
-	for i in range(2,10):
-		ll.push(i)
-
-	ll.printLL()
-	print "Reversing"
-	ll.reverse()
-	ll.printLL()
-
 def swap(x,i,j):
 	"""
 	Swap the ith and the jth element of the array x
