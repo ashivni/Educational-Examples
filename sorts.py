@@ -136,6 +136,13 @@ class heap:
 		else:
 			return None
 	
+	def delMin(self):
+		if self.heapLen > 0:
+			self.heapLen -= 1
+			return self.x.pop()
+		else:
+			return None
+	
 	def __swim(self):
 		"""
 		Re-heapyfy with swim
@@ -178,5 +185,39 @@ class heap:
 				
 def quicksort(x):
 	"""
-	Sort 
+	Sort x inplace using the classical quicksort algorithm.
+	We do not randomize; the user must.
 	"""
+	def partition(x,lo,hi):
+		"""
+		Partition the array x[lo,...,hi-1] such that the entry originally
+		at x[lo] is at its correct sorted position. Return 'j' where j 
+		is the correct index of this entry
+		"""
+		ptr1, ptr2 = lo+1, hi
+		partitioned = False
+
+		while not partitioned:
+			while x[ptr1] <= x[lo] and ptr1 < hi:
+				ptr1 += 1
+		
+			while x[ptr2] > x[lo] and ptr2 > lo:
+				ptr2 -= 1
+
+			if ptr1 >= ptr2 or ptr1 == hi or ptr2 == lo:
+				partitioned = True
+			else:
+				swap(x,ptr1,ptr2)
+
+		swap(x,lo,ptr2)
+
+		return ptr2
+
+	def sort(x,lo,hi):
+		if hi <= lo:
+			return
+		pivot = partition(x,lo,hi)
+		sort(x,lo,pivot-1)
+		sort(x,pivot+1,hi)
+
+	sort(x,0,len(x)-1)
